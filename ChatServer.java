@@ -2,11 +2,13 @@
 *	UDP Server Program
 *	Listens on a UDP port
 *	Receives a line of input from a UDP client
-*	Returns an upper case version of the line to the client
+* Receives a line from a 2nd client
+*	Establish communication between clients untill one enters "Goodbye"
 *
 *	@author: Kevin Hewitt
+* @Co-author: Aaron Weinberg
 * @teammate:  Andrew Krager 
-@	version: 2.1
+@	version: 2.2
 */
 
 import java.io.*;
@@ -52,20 +54,21 @@ class ChatServer
       {
         case 0: 
           //recieve information from 1st address, construct response
-          DatagramPacket receivePacket =
+          DatagramPacket receivePacket1 =
              new DatagramPacket(receiveData, receiveData.length);
            serverSocket.receive(receivePacket);
 
-          String message = new String(receivePacket.getData());
-
-          //send response to client over DatagramSocket
+          message = new String( receivePacket.getData());
+          if (message.length()>=9 && (message.substring(0,9).equals("HELLO red") || message.substring(0,10).equals("HELLO blue")))
+          {
+                      //send response to client over DatagramSocket
           InetAddress IPAddress1 = receivePacket.getAddress();
 
           int port1 = receivePacket.getPort();
 
-          String capitalizedMessage = message.toUpperCase();
+          String serverReply = "100";
 
-          sendData = capitalizedMessage.getBytes();
+          sendData = serverReply.getBytes();
 
           DatagramPacket sendPacket1 =
              new DatagramPacket(sendData, sendData.length, IPAddress1,
@@ -75,32 +78,35 @@ class ChatServer
           state = 1;
           break;
           //end case 0
+          }
+          else
+          {
+            System.out.println("502 5.5.2 Error: command not recognized");
+            break;
+          }
 
         case 1:
           //recieve information from 2nd address, construct response
           DatagramPacket receivePacket =
              new DatagramPacket(receiveData, receiveData.length);
            serverSocket.receive(receivePacket);
-           
-          String message = new String(receivePacket.getData());
 
           //send response to client over DatagramSocket
           InetAddress IPAddress2 = receivePacket.getAddress();
 
           int port2 = receivePacket.getPort();
 
-          String capitalizedMessage = message.toUpperCase();
+          String serverReply = "200";
 
-          sendData = capitalizedMessage.getBytes();
-
-          //create sepereate packets for the two clients
-          DatagramPacket sendPacket1 =
-             new DatagramPacket(sendData, sendData.length, IPAddress1,
-                               port1);
+          sendData = serverReply.getBytes();
 
              DatagramPacket sendPacket2 =
              new DatagramPacket(sendData, sendData.length, IPAddress2,
                                port2);
+
+             DatagramPacket sendPacket1 =
+             new DatagramPacket(sendData, sendData.length, IPAddress1,
+                               port1);
 
           serverSocket.send(sendPacket1);
           serverSocket.send(sendPacket2);
@@ -114,37 +120,81 @@ class ChatServer
              new DatagramPacket(receiveData, receiveData.length);
            serverSocket.receive(receivePacket);
 
-          //if not goodbye...
-          message = new String( receivePacket.getData());
-          if (message.length()>=7 && message.substring(0,7).equals("Goodbye"))
-          {
-            state = 3;
+           if (IPAddress = sendPacket2.getAddress())
+           {
+            System.out.println("The wrong person is talking")
+           }
+           else
+           {
+
+
+            //if not goodbye...
+            message = new String( receivePacket.getData());
+            if (message.length()>=7 && message.substring(0,7).equals("Goodbye"))
+            {
+              String serverReply = "Goodbye";
+
+          sendData = serverReply.getBytes();
+
+              DatagramPacket sendPacket2 =
+             new DatagramPacket(sendData, sendData.length, IPAddress2,
+                               port2);
+
+             DatagramPacket sendPacket1 =
+             new DatagramPacket(sendData, sendData.length, IPAddress1,
+                               port1);
+
+          serverSocket.send(sendPacket1);
+          serverSocket.send(sendPacket2);
+              state = 3;
+              break;
+            }
+
+
+
+
+
+            //...relay message to the other client
+            IPAddress = receivePacket.getAddress();
+            port = receivePacket.getPort();
+            //if the address comming in is the same as IP1
+
+
+
+
+            if ((port == port1) && (IPAddress.equals(IPAddress1)))
+            {
+              //the person talking is IP1, set the address and port to the OTHER person
+              IPAddress = IPAddress2;
+              port = port2;
+            }else{
+              //otherwise, adress and port still = the OTHER person
+              IPAddress = IPAddress1;
+              port = port1;
+            }
+
+
+
+
+            sendData = message.getBytes();
+
+
+
+
+            //address and port now contain info of should-be recipient
+            //pack all the info into a packet, send it to the recipient
+            DatagramPacket sendPacket =
+               new DatagramPacket(sendData, sendData.length, IPAddress,
+                                 port);
+            //send the message to the other person
+
+            serverSocket.send(sendPacket);
+          }
+          //end "else"
+
+
             break;
-          }
-          //...relay message to the other client
-          IPAddress = receivePacket.getAddress();
-          port = receivePacket.getPort();
-          //if the address comming in is the same as IP1
-          if ((port == port1) && (IPAddress.equals(IPAddress1)))
-          {
-            //the person talking is IP1, set the address and port to the OTHER person
-            IPAddress = IPAddress2;
-            port = port2;
-          }else{
-            //otherwise, adress and port still = the OTHER person
-            IPAddress = IPAddress1;
-            port = port1;
-          }
-          //address and port now contain info of should-be recipient
-          //pack all the info into a packet, send it to the recipient
-          DatagramPacket sendPacket =
-             new DatagramPacket(sendData, sendData.length, IPAddress,
-                               port);
-          //send the message to the other person
-
-
-          break;
-          //end case 2
+            //end case 2
 
       }//end switch
 
