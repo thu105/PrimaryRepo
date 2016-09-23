@@ -25,6 +25,7 @@ class ChatServer
     String message = "";
     String serverReply = "";
     DatagramPacket receivePacket = null;
+    DatagramPacket receivePacket2 = null;
     DatagramPacket sendPacket = null;
     DatagramPacket sendPacket1 = null;
     DatagramPacket sendPacket2 = null;
@@ -57,15 +58,15 @@ class ChatServer
           //recieve information from 1st address, construct response
            DatagramPacket receivePacket1 =
              new DatagramPacket(receiveData, receiveData.length);
-           serverSocket.receive(receivePacket);
+           serverSocket.receive(receivePacket1);
 
-          message = new String( receivePacket.getData());
+          message = new String( receivePacket1.getData());
           if (message.length()>=9 && (message.substring(0,9).equals("HELLO red") || message.substring(0,10).equals("HELLO blue")))
           {
                       //send response to client over DatagramSocket
-          IPAddress1 = receivePacket.getAddress();
+          IPAddress1 = receivePacket1.getAddress();
 
-          port1 = receivePacket.getPort();
+          port1 = receivePacket1.getPort();
 
           serverReply = "100";
 
@@ -117,9 +118,9 @@ class ChatServer
 
         case 2:
           //recieve the incomming message information
-          receivePacket =
+          receivePacket2 =
              new DatagramPacket(receiveData, receiveData.length);
-           serverSocket.receive(receivePacket);
+           serverSocket.receive(receivePacket2);
 
            if (IPAddress == sendPacket2.getAddress())
            {
