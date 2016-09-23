@@ -8,7 +8,7 @@
 *	@author: Kevin Hewitt
 * @Co-author: Aaron Weinberg
 * @teammate:  Andrew Krager 
-@	version: 2.2
+@	version: 2.3
 */
 
 import java.io.*;
@@ -23,8 +23,9 @@ class ChatServer
     int port = 0, port1 = 0, port2 = 0;
     InetAddress IPAddress = null, IPAddress1 = null, IPAddress2 = null;
     String message = "";
-    String response = "";
+    String serverReply = "";
     DatagramPacket receivePacket = null;
+    DatagramPacket sendPacket = null;
     DatagramPacket sendPacket1 = null;
     DatagramPacket sendPacket2 = null;
     int state = 0;
@@ -54,7 +55,7 @@ class ChatServer
       {
         case 0: 
           //recieve information from 1st address, construct response
-          DatagramPacket receivePacket1 =
+           DatagramPacket receivePacket1 =
              new DatagramPacket(receiveData, receiveData.length);
            serverSocket.receive(receivePacket);
 
@@ -62,15 +63,15 @@ class ChatServer
           if (message.length()>=9 && (message.substring(0,9).equals("HELLO red") || message.substring(0,10).equals("HELLO blue")))
           {
                       //send response to client over DatagramSocket
-          InetAddress IPAddress1 = receivePacket.getAddress();
+          IPAddress1 = receivePacket.getAddress();
 
-          int port1 = receivePacket.getPort();
+          port1 = receivePacket.getPort();
 
-          String serverReply = "100";
+          serverReply = "100";
 
           sendData = serverReply.getBytes();
 
-          DatagramPacket sendPacket1 =
+          sendPacket1 =
              new DatagramPacket(sendData, sendData.length, IPAddress1,
                                port1);
 
@@ -87,24 +88,24 @@ class ChatServer
 
         case 1:
           //recieve information from 2nd address, construct response
-          DatagramPacket receivePacket =
+          receivePacket =
              new DatagramPacket(receiveData, receiveData.length);
            serverSocket.receive(receivePacket);
 
           //send response to client over DatagramSocket
-          InetAddress IPAddress2 = receivePacket.getAddress();
+          IPAddress2 = receivePacket.getAddress();
 
-          int port2 = receivePacket.getPort();
+          port2 = receivePacket.getPort();
 
-          String serverReply = "200";
+          serverReply = "200";
 
           sendData = serverReply.getBytes();
 
-             DatagramPacket sendPacket2 =
+             sendPacket2 =
              new DatagramPacket(sendData, sendData.length, IPAddress2,
                                port2);
 
-             DatagramPacket sendPacket1 =
+             sendPacket1 =
              new DatagramPacket(sendData, sendData.length, IPAddress1,
                                port1);
 
@@ -116,13 +117,13 @@ class ChatServer
 
         case 2:
           //recieve the incomming message information
-          DatagramPacket receivePacket =
+          receivePacket =
              new DatagramPacket(receiveData, receiveData.length);
            serverSocket.receive(receivePacket);
 
-           if (IPAddress = sendPacket2.getAddress())
+           if (IPAddress == sendPacket2.getAddress())
            {
-            System.out.println("The wrong person is talking")
+            System.out.println("The wrong person is talking");
            }
            else
            {
@@ -132,15 +133,15 @@ class ChatServer
             message = new String( receivePacket.getData());
             if (message.length()>=7 && message.substring(0,7).equals("Goodbye"))
             {
-              String serverReply = "Goodbye";
+              serverReply = "Goodbye";
 
           sendData = serverReply.getBytes();
 
-              DatagramPacket sendPacket2 =
+              sendPacket2 =
              new DatagramPacket(sendData, sendData.length, IPAddress2,
                                port2);
 
-             DatagramPacket sendPacket1 =
+             sendPacket1 =
              new DatagramPacket(sendData, sendData.length, IPAddress1,
                                port1);
 
@@ -183,7 +184,7 @@ class ChatServer
 
             //address and port now contain info of should-be recipient
             //pack all the info into a packet, send it to the recipient
-            DatagramPacket sendPacket =
+            sendPacket =
                new DatagramPacket(sendData, sendData.length, IPAddress,
                                  port);
             //send the message to the other person
