@@ -42,7 +42,7 @@ class Blue {
             System.out.println("FROM SERVER:" + response);
             if (response.substring(0,3).equals("100")){
               state = 1;
-              clientNum = true;
+              canSend = true;
             }
             else if (response.substring(0,3).equals("200")){
               state = 2;
