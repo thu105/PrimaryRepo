@@ -20,7 +20,7 @@ class Blue {
       DatagramSocket clientSocket = new DatagramSocket();
 
       InetAddress IPAddress = InetAddress.getByName("localhost");
-      bool canSend = false;
+      Bool canSend = false;
       byte[] sendData = new byte[1024];
       byte[] receiveData = new byte[1024];
       int state = 0;
