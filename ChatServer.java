@@ -121,25 +121,28 @@ class ChatServer
 
         case 2:
           //recieve the incomming message information
-          receivePacket2 =
+          receivePacket =
              new DatagramPacket(receiveData, receiveData.length);
-           serverSocket.receive(receivePacket2);
+           serverSocket.receive(receivePacket);
 
-           if (IPAddress == sendPacket2.getAddress())
+
+           if (IPAddress == receivePacket2.getAddress())
            {
             System.out.println("The wrong person is talking");
            }
+
+
            else
            {
-
-
             //if not goodbye...
-            message = new String( receivePacket.getData());
+            message = new String(receivePacket.getData());
+
+
             if (message.length()>=7 && message.substring(0,7).equals("Goodbye"))
             {
               serverReply = "Goodbye";
 
-          sendData = serverReply.getBytes();
+              sendData = serverReply.getBytes();
 
               sendPacket2 =
              new DatagramPacket(sendData, sendData.length, IPAddress2,
@@ -149,23 +152,17 @@ class ChatServer
              new DatagramPacket(sendData, sendData.length, IPAddress1,
                                port1);
 
-          serverSocket.send(sendPacket1);
-          serverSocket.send(sendPacket2);
+              serverSocket.send(sendPacket1);
+              serverSocket.send(sendPacket2);
               state = 3;
               break;
             }
-
-
-
 
 
             //...relay message to the other client
             IPAddress = receivePacket.getAddress();
             port = receivePacket.getPort();
             //if the address comming in is the same as IP1
-
-
-
 
             if ((port == port1) && (IPAddress.equals(IPAddress1)))
             {
@@ -188,12 +185,10 @@ class ChatServer
             //send the message to the other person
 
             serverSocket.send(sendPacket);
-          }
-          //end "else"
+          }//end "else"
 
-
-            break;
-            //end case 2
+          break;
+          //end case 2
 
       }//end switch
 
