@@ -61,26 +61,29 @@ class ChatServer
            serverSocket.receive(receivePacket1);
 
           message = new String( receivePacket1.getData());
+
+
           if (message.length()>=9 && (message.substring(0,9).equals("HELLO red") || message.substring(0,10).equals("HELLO blue")))
           {
-                      //send response to client over DatagramSocket
-          IPAddress1 = receivePacket1.getAddress();
+            //send response to client over DatagramSocket
+            IPAddress1 = receivePacket1.getAddress();
 
-          port1 = receivePacket1.getPort();
+            port1 = receivePacket1.getPort();
 
-          serverReply = "100";
+            serverReply = "100";
 
-          sendData = serverReply.getBytes();
+            sendData = serverReply.getBytes();
 
-          sendPacket1 =
-             new DatagramPacket(sendData, sendData.length, IPAddress1,
-                               port1);
+            sendPacket1 =
+               new DatagramPacket(sendData, sendData.length, IPAddress1,
+                                 port1);
 
-          serverSocket.send(sendPacket1);
-          state = 1;
-          break;
-          //end case 0
-          }
+            serverSocket.send(sendPacket1);
+            state = 1;
+            break;
+
+            //end case 0
+          }//endif
           else
           {
             System.out.println("502 5.5.2 Error: command not recognized");
@@ -175,13 +178,7 @@ class ChatServer
               port = port1;
             }
 
-
-
-
             sendData = message.getBytes();
-
-
-
 
             //address and port now contain info of should-be recipient
             //pack all the info into a packet, send it to the recipient
