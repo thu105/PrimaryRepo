@@ -20,7 +20,7 @@ class Blue {
       DatagramSocket clientSocket = new DatagramSocket();
 
       InetAddress IPAddress = InetAddress.getByName("localhost");
-
+      bool canSend = false;
       byte[] sendData = new byte[1024];
       byte[] receiveData = new byte[1024];
       int state = 0;
@@ -42,9 +42,11 @@ class Blue {
             System.out.println("FROM SERVER:" + response);
             if (response.substring(0,3).equals("100")){
               state = 1;
+              clientNum = true;
             }
             else if (response.substring(0,3).equals("200")){
               state = 2;
+              System.out.println("In Chat mode");
             }
             break;
           case 1: // Waiting for notification that the second client is ready
@@ -54,6 +56,7 @@ class Blue {
             System.out.println("FROM SERVER:" + response);
             if(response.substring(0,3).equals("200")){
               state = 2;
+              System.out.println("In Chat mode");
             }
             //get message from user and send it to server
             //Chat mode
@@ -63,15 +66,20 @@ class Blue {
             //Chat mode
             //receive message from other client
             //check for Goodbye message
-            System.out.println("Type what you want to send to the other client:" + '\n');
-            message = inFromUser.readLine();
-            sendData = message.getBytes();
-            sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 9876);
-            clientSocket.send(sendPacket);
+            if(canSend)
+            {
+              System.out.println("Type what you want to send to the other client:" + '\n');
+              message = inFromUser.readLine();
+              sendData = message.getBytes();
+              sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 9876);
+              clientSocket.send(sendPacket);
+              canSend = false;
+            }
             receivePacket = new DatagramPacket(receiveData, receiveData.length);
             clientSocket.receive(receivePacket);
             response = new String(receivePacket.getData());
             System.out.println("FROM SERVER:" + response);
+            canSend = true;
             if (response.length()>=7 && response.substring(0,7).equals("Goodbye")){
               state = 3;
               break;
