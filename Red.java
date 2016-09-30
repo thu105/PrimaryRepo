@@ -20,7 +20,7 @@ class Red {
     DatagramSocket clientSocket = new DatagramSocket();
 
     InetAddress IPAddress = InetAddress.getByName("localhost");
-
+    int clientNum = 0;
     byte[] sendData = new byte[1024];
     byte[] receiveData = new byte[1024];
     int state = 0;
@@ -42,9 +42,12 @@ class Red {
           System.out.println("FROM SERVER:" + response);
           if (response.substring(0,3).equals("100")){
             state = 1;
+            clientNum = 1;
           }
           else if (response.substring(0,3).equals("200")){
             state = 2;
+            clientNum = 2;
+            System.out.println("In Chat mode");
           }
           break;
         case 1: // Waiting for notification that the second client is ready
@@ -55,6 +58,7 @@ class Red {
           if(response.substring(0,3).equals("200")){
             state = 2;
           }
+          System.out.println("In Chat mode");
           //get message from user and send it to server
           //Chat mode
           //receive message from other client
@@ -63,11 +67,23 @@ class Red {
           //Chat mode
           //receive message from other client
           //check for Goodbye message
-          System.out.println("Type what you want to send to the other client:" + '\n');
-          message = inFromUser.readLine();
-          sendData = message.getBytes();
-          sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 9876);
-          clientSocket.send(sendPacket);
+          if(clientNum == 1)
+          {
+            System.out.println("Type what you want to send to the other client:" + '\n');
+            message = inFromUser.readLine();
+            sendData = message.getBytes();
+            sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 9876);
+            clientSocket.send(sendPacket);
+            clientNum = 2;
+          }
+          if(message.equals("HELLO red"))
+          {
+
+          }
+          else
+          {
+            clientNum = 1;
+          }
           receivePacket = new DatagramPacket(receiveData, receiveData.length);
           clientSocket.receive(receivePacket);
           response = new String(receivePacket.getData());
